@@ -99,11 +99,13 @@ instead of the full perspective list."
   "What order to sort perspectives.
 If 'name, then sort alphabetically.
 If 'access, then sort by last time accessed (latest first).
-If 'created, then sort by time created (latest first)."
+If 'created, then sort by time created (latest first).
+If 'created-oldest, then sort by time created (oldest first)."
   :group 'perspective-mode
   :type '(choice (const :tag "By Name"          name)
                  (const :tag "By Time Accessed" access)
-                 (const :tag "By Time Created"  created)))
+                 (const :tag "By Time Created"  created)
+                 (const :tag "By Time Created, oldest"  created-oldest)))
 
 (defcustom persp-frame-global-perspective-name "GLOBAL"
   "The name for a frames global perspective."
@@ -592,7 +594,12 @@ first."
                    (sort persps (lambda (a b)
                                   (time-less-p (persp-last-switch-time b)
                                                (persp-last-switch-time a))))))
-          ((eq persp-sort 'created)
+          ((eq persp-sort 'created-oldest) ;; oldest first
+           (mapcar 'persp-name
+                   (sort persps (lambda (a b)
+                                  (time-less-p (persp-created-time a)
+                                               (persp-created-time b))))))
+          ((eq persp-sort 'created) ;; latest first
            (mapcar 'persp-name
                    (sort persps (lambda (a b)
                                   (time-less-p (persp-created-time b)
